@@ -1,6 +1,8 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_file
 from flask_sqlalchemy import SQLAlchemy
 import os
+import qrcode
+import io
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///equipment.db'
@@ -93,13 +95,10 @@ def delete_equipment(equipmentID):
     except Exception as e:
         return jsonify({'error': 'Failed to delete equipment'}), 500
 
-# New Route to Fetch All Data
+# Route to fetch all data
 @app.route('/all_data', methods=['GET'])
 def get_all_data():
-    # Query all rows in the equipment table
     equipment_list = Equipment.query.all()
-
-    # Convert data to JSON format
     data = [{
         'id': eq.id,
         'equipment_id': eq.equipment_id,
@@ -109,8 +108,49 @@ def get_all_data():
         'comments': eq.comments,
         'action': eq.action
     } for eq in equipment_list]
-
     return jsonify(data)
+
+# Route to generate QR code for an equipment
+@app.route('/generate_qrcode/<equipment_id>', methods=['GET'])
+def generate_qrcode(equipment_id):
+    try:
+        # Generate URL pointing to the equipment details page
+        equipment_url = f"https://em-5qm1.onrender.com/equipment/{equipment_id}"
+        qr_img = qrcode.make(equipment_url)
+        
+        # Save QR code to an in-memory buffer
+        buffer = io.BytesIO()
+        qr_img.save(buffer, format="PNG")
+        buffer.seek(0)
+
+        return send_file(buffer, mimetype="image/png")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Route to display equipment details dynamically
+@app.route('/equipment/<equipment_id>', methods=['GET'])
+def equipment_details(equipment_id):
+    try:
+        # Query for equipment by ID
+        equipment = Equipment.query.filter_by(equipment_id=equipment_id).first()
+        if not equipment:
+            return "<h1>404 - Equipment Not Found</h1>", 404
+
+        # Display equipment details as HTML
+        details = f"""
+        <h1>Equipment Details</h1>
+        <ul>
+            <li><strong>Equipment ID:</strong> {equipment.equipment_id}</li>
+            <li><strong>Project Number:</strong> {equipment.project_number}</li>
+            <li><strong>Last Maintenance:</strong> {equipment.last_maintenance}</li>
+            <li><strong>Max Flow:</strong> {equipment.max_flow}</li>
+            <li><strong>Comments:</strong> {equipment.comments}</li>
+            <li><strong>Action:</strong> {equipment.action}</li>
+        </ul>
+        """
+        return details
+    except Exception as e:
+        return f"<h1>Error: {str(e)}</h1>", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
