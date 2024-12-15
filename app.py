@@ -5,7 +5,10 @@ import qrcode
 import io
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://equipmentlist_user:722hxcFW7kDE9J90Runx9w2Yez1wFW@dpg-ctfkb5bgbbvc73den670-a:5432/equipmentlist'
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    'postgresql://equipmentlist_user:722hxcFW75kDE9jT90Runx9w2Yez1wFW'
+    '@dpg-ctfkb5bgbbvc73den670-a:5432/equipmentlist'
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
