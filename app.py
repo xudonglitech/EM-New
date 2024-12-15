@@ -93,5 +93,24 @@ def delete_equipment(equipmentID):
     except Exception as e:
         return jsonify({'error': 'Failed to delete equipment'}), 500
 
+# New Route to Fetch All Data
+@app.route('/all_data', methods=['GET'])
+def get_all_data():
+    # Query all rows in the equipment table
+    equipment_list = Equipment.query.all()
+
+    # Convert data to JSON format
+    data = [{
+        'id': eq.id,
+        'equipment_id': eq.equipment_id,
+        'project_number': eq.project_number,
+        'last_maintenance': eq.last_maintenance,
+        'max_flow': eq.max_flow,
+        'comments': eq.comments,
+        'action': eq.action
+    } for eq in equipment_list]
+
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run(debug=True)
