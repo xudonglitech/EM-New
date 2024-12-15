@@ -114,7 +114,7 @@ def get_all_data():
 @app.route('/generate_qrcode/<equipment_id>', methods=['GET'])
 def generate_qrcode(equipment_id):
     try:
-        # Generate URL pointing to the equipment details page
+        # Generate a URL pointing to the equipment details page
         equipment_url = f"https://em-5qm1.onrender.com/equipment/{equipment_id}"
         qr_img = qrcode.make(equipment_url)
         
