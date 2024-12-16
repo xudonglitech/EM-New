@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select, textarea, button {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Equipment Details</h2>
+        <form method="POST">
+            <label for="equipment_id">Equipment ID</label>
+            <input type="text" id="equipment_id" name="equipment_id" value="{{ equipment.equipment_id }}" readonly>
+
+            <label for="project_number">Project Number</label>
+            <input type="text" id="project_number" name="project_number" value="{{ equipment.project_number }}">
+
+            <label for="last_maintenance">Last Maintenance</label>
+            <input type="text" id="last_maintenance" name="last_maintenance" value="{{ equipment.last_maintenance }}">
+
+            <label for="max_flow">Max Flow</label>
+            <input type="text" id="max_flow" name="max_flow" value="{{ equipment.max_flow }}">
+
+            <label for="comments">Comments</label>
+            <textarea id="comments" name="comments">{{ equipment.comments }}</textarea>
+
+            <label for="action">Action</label>
+            <select id="action" name="action">
+                <option value="good" {% if equipment.action == 'good' %}selected{% endif %}>Good</option>
+                <option value="malfunction" {% if equipment.action == 'malfunction' %}selected{% endif %}>Malfunction</option>
+                <option value="withdraw" {% if equipment.action == 'withdraw' %}selected{% endif %}>Withdraw</option>
+            </select>
+
+            <button type="submit">Save</button>
+        </form>
+    </div>
+</body>
+</html>
