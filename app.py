@@ -18,11 +18,23 @@ app = Flask(__name__)
 
 #________________________ database externally - for using pycharm
 
+#app.config['SQLALCHEMY_DATABASE_URI'] = (
+ #   'postgresql://equipmentlist_user:722hxcFW75kDE9jT90Runx9w2Yez1wFW'
+ #   '@dpg-ctfkb5bgbbvc73den670-a.oregon-postgres.render.com:5432/equipmentlist'
+#)
+
+
+# 8 - 24 is the old database address
+
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'postgresql://equipmentlist_user:722hxcFW75kDE9jT90Runx9w2Yez1wFW'
-    '@dpg-ctfkb5bgbbvc73den670-a.oregon-postgres.render.com:5432/equipmentlist'
+    "postgresql://equipmentlist_new_user:"
+    "xpaYk8ye8aeznCoCxnxnUWVRymoNadz5"
+    "@dpg-ctu6963tq21c73bgdsd0-a.oregon-postgres.render.com/equipmentlist_new"
 )
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
 
 db = SQLAlchemy(app)
 
