@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #0078d4;
+            color: white;
+        }
+        td, th {
+            word-wrap: break-word; /* Ensures text wraps to the next line */
+            white-space: normal; /* Allows wrapping */
+        }
+
+        td:nth-child(5), th:nth-child(5) {
+            max-width: 200px; /* Optional: Limits the width of the "comments" column */
+            line-height: 2; /* Adds proper spacing between lines */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Search Results for "{{ query }}"</h3>
+        {% if results %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Equipment ID</th>
+                    <th>Project Number</th>
+                    <th>Last Maintenance</th>
+                    <th>Max Flow</th>
+                    <th>Comments</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in results %}
+                <tr>
+                    <td>{{ item.equipment_id }}</td>
+                    <td>{{ item.project_number }}</td>
+                    <td>{{ item.last_maintenance }}</td>
+                    <td>{{ item.max_flow }}</td>
+                    <td>{{ item.comments }}</td>
+                    <td>{{ item.action }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No results found for your query.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

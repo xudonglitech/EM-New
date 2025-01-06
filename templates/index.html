@@ -1,16 +1,425 @@
-Equipment Management
-Equipment ID
-Project Number
-Last Maintenance Date
-Max Flow
-Comments
-Action
-Save
-Delete
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #0078d4;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .container form {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 1rem;
+        }
+
+        .container input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .container form button {
+            padding: 10px 20px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .container form button:hover {
+            background-color: #005bb5;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #0078d4;
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+        th::after {
+            content: '\25BC'; /* Downward triangle */
+            position: absolute;
+            right: 10px;
+            font-size: 0.8rem;
+            color: white;
+        }
+        .add-equipment {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .add-equipment input {
+            padding: 0.5rem;
+            flex: 1;
+        }
+        .add-equipment button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .add-equipment button:hover {
+            background-color: #005bb5;
+        }
+        select {
+            padding: 0.3rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        select.good {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        select.malfunction {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        select.withdraw {
+            background-color: #e2e3e5;
+            color: #6c757d;
+        }
+        .editable {
+            border: 1px dashed #ccc;
+            padding: 4px;
+            background-color: #fff;
+        }
+        .qrcode {
+            width: 100px;
+            height: 100px;
+        }
+        .hidden {
+            display: none;
+        }
+        td, th {
+            word-wrap: break-word; /* Ensures text wraps to the next line */
+            white-space: normal; /* Allows wrapping */
+        }
+
+        td:nth-child(5), th:nth-child(5) {
+            max-width: 200px; /* Optional: Limits the width of the "comments" column */
+            line-height: 2; /* Adds proper spacing between lines */
+        }
+
+        .maintenance-green {
+            background-color: green;
+            color: white;
+        }
+
+        .maintenance-orange {
+            background-color: orange;
+            color: white;
+        }
+
+        .maintenance-red {
+            background-color: red;
+            color: white;
+        }
 
 
 
+        .layout {
+        display: flex;
+        min-height: calc(100vh - 70px); /* Adjust based on your header height */
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #dee2e6;
+            height: 100%;
+        }
+
+        .sidebar h3 {
+            color: #0078d4;
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #333;
+            text-decoration: none;
+            padding: 8px 12px;
+            display: block;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #e9ecef;
+            color: #0078d4;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+/* Update your existing container style */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Equipment Management</h1>
+    </header>
 
 
-Add Equipment
-Toggle QR Code Column
+
+    <div class="container">
+        <div style="margin-bottom: 10px; display: flex; justify-content: flex-end; align-items: center;">
+            <form method="GET" action="/search" style="display: flex; gap: 10px; width: auto;">
+                <input type="text" name="query" placeholder="Search..."
+                style="padding: 0 8px; width: 200px; height: 36px; line-height: 36px; border: 1px solid #ddd; border-radius: 4px;">
+                <button type="submit"
+                style="padding: 8px 12px; height: 36px; background-color: #0078d4; color: white; border: none; border-radius: 4px; cursor: pointer;">Search</button>
+            </form>
+        </div>
+        <table id="equipmentTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Equipment ID</th>
+                    <th onclick="sortTable(1)">Project Number</th>
+                    <th onclick="sortTable(2)">Last Maintenance Date</th>
+                    <th onclick="sortTable(3)">Max Flow</th>
+                    <th onclick="sortTable(4)">Comments</th>
+                    <th>Status</th>
+                    <th class="qrcode-header hidden">QR Code</th>
+                    <th>Save</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Equipment items will be dynamically added here -->
+            </tbody>
+        </table>
+        <div class="add-equipment">
+            <input type="text" id="equipmentID" placeholder="Equipment ID">
+            <input type="text" id="projectNumber" placeholder="Project Number (Optional)">
+            <input type="date" id="lastMaintenance" placeholder="Enter last maintenance date here">
+            <input type="text" id="maxFlow" placeholder="Max Flow">
+            <input type="text" id="comments" placeholder="Comments">
+            <button onclick="addEquipment()">Add Equipment</button>
+            <button onclick="toggleQRCode()">Toggle QR Code Column</button>
+        </div>
+    </div>
+
+<script>
+    async function addEquipment() {
+        const equipmentID = document.getElementById('equipmentID').value;
+        const projectNumber = document.getElementById('projectNumber').value || null;
+        const lastMaintenance = document.getElementById('lastMaintenance').value;
+        const maxFlow = document.getElementById('maxFlow').value;
+        const comments = document.getElementById('comments').value;
+
+        if (!equipmentID || !lastMaintenance || !maxFlow || !comments) {
+            alert('Please fill in all mandatory fields.');
+            return;
+        }
+
+        const action = "good"; // Default action value
+        const addResponse = await fetch('/add_equipment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ equipmentID, projectNumber, lastMaintenance, maxFlow, comments, action })
+        });
+
+        if (addResponse.ok) {
+            alert('Equipment added successfully');
+            location.reload();
+        } else {
+            alert('Failed to add equipment');
+        }
+    }
+
+    async function fetchEquipment() {
+        try {
+            // Attempt to fetch equipment data
+            const response = await fetch('/get_equipment', { method: 'GET' });
+
+            // If server responds with an error status (e.g., 500)
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+
+            // Parse JSON data
+            const equipmentList = await response.json();
+
+            const tbody = document.querySelector('#equipmentTable tbody');
+            tbody.innerHTML = '';
+            equipmentList.forEach(eq => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><span contenteditable="true" class="editable">${eq.equipmentID}</span></td>
+                    <td><span contenteditable="true" class="editable">${eq.projectNumber || ''}</span></td>
+                    <td><span contenteditable="true" class="editable">${eq.lastMaintenance}</span></td>
+                    <td><span contenteditable="true" class="editable">${eq.maxFlow}</span></td>
+                    <td><span contenteditable="true" class="editable">${eq.comments}</span></td>
+                    <td>
+                        <select class="${eq.action}" onchange="updateSelectColor(this)">
+                            <option value="good" ${eq.action === 'good' ? 'selected' : ''}>Good Condition</option>
+                            <option value="malfunction" ${eq.action === 'malfunction' ? 'selected' : ''}>Malfunction</option>
+                            <option value="withdraw" ${eq.action === 'withdraw' ? 'selected' : ''}>Withdraw</option>
+                        </select>
+                    </td>
+                    <td class="qrcode hidden"><div id="qrcode-${eq.equipmentID}"></div></td>
+                    <td><button onclick="saveEquipment('${eq.equipmentID}')">Save</button></td>
+                    <td><button onclick="deleteEquipment('${eq.equipmentID}')">Delete</button></td>`;
+                new QRCode(document.getElementById(`qrcode-${eq.equipmentID}`), `${window.location.origin}/equipment/${eq.equipmentID}`);
+
+                // Maintenance date color logic
+                const lastMaintenanceCell = row.cells[2];
+                const lastMaintenanceDate = new Date(lastMaintenanceCell.innerText.trim());
+                const today = new Date();
+                const timeDiff = today - lastMaintenanceDate;
+                const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                if (daysDiff <= 60) {
+                    lastMaintenanceCell.style.color = "green";
+                } else if (daysDiff > 60 && daysDiff <= 75) {
+                    lastMaintenanceCell.style.color = "orange";
+                } else if (daysDiff > 75) {
+                    lastMaintenanceCell.style.color = "red";
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching equipment:', error);
+
+            // Alert the user and reload the page after 5 seconds
+            alert('Database not responding. The page will reload in 5 seconds...');
+            setTimeout(() => {
+                location.reload();
+            }, 5000);
+        }
+    }
+
+    function updateSelectColor(selectElement) {
+        const classList = selectElement.classList;
+        classList.remove('good', 'malfunction', 'withdraw');
+        classList.add(selectElement.value);
+    }
+        function sortTable(columnIndex) {
+        const table = document.getElementById("equipmentTable");
+        const rows = Array.from(table.rows).slice(1); // Exclude header row
+        const isAscending = table.getAttribute("data-sort-order") !== "asc";
+
+        rows.sort((a, b) => {
+            const aText = a.cells[columnIndex].innerText.trim();
+            const bText = b.cells[columnIndex].innerText.trim();
+
+            if (!isNaN(aText) && !isNaN(bText)) {
+                return isAscending ? aText - bText : bText - aText;
+            }
+            return isAscending ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        });
+
+        rows.forEach(row => table.tBodies[0].appendChild(row)); // Re-append rows in sorted order
+
+        table.setAttribute("data-sort-order", isAscending ? "asc" : "desc");
+    }
+    async function saveEquipment(equipmentID) {
+        const row = [...document.querySelectorAll('#equipmentTable tbody tr')].find(row => row.children[0].innerText === equipmentID);
+        const updatedEquipment = {
+            equipmentID,
+            projectNumber: row.children[1].innerText,
+            lastMaintenance: row.children[2].innerText,
+            maxFlow: row.children[3].innerText,
+            comments: row.children[4].innerText,
+            action: row.children[5].querySelector('select').value
+        };
+        const response = await fetch('/update_equipment', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedEquipment)
+        });
+        if (response.ok) {
+            alert('Changes saved successfully');
+            location.reload(); // Refresh the page after saving
+        } else {
+            alert('Failed to save changes');
+        }
+    }
+
+    async function deleteEquipment(equipmentID) {
+        const response = await fetch(`/delete_equipment/${equipmentID}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            alert('Equipment deleted successfully');
+            location.reload();
+        } else {
+            alert('Failed to delete equipment');
+            location.reload(); // Refresh the page after deletion
+        }
+    }
+    function toggleQRCode() {
+        const qrCodeHeader = document.querySelector('.qrcode-header');
+        document.querySelectorAll('.qrcode').forEach(cell => cell.classList.toggle('hidden'));
+        qrCodeHeader.classList.toggle('hidden');
+    }
+
+    window.onload = fetchEquipment;
+</script>
+</body>
+</html>
